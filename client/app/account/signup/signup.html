@@ -48,12 +48,17 @@
                 </p>
               </div>
 
-              <div class="form-group" ng-class="{ 'has-success': form.confirmPassword.$valid && vm.submitted, 'has-error': form.confirmPassword.$invalid && vm.submitted }" style="margin-bottom: 40px;">
+              <div class="form-group" ng-class="{ 'has-success': form.confirmPassword.$valid && vm.submitted, 'has-error': form.confirmPassword.$invalid && vm.submitted }" >
                 <!--<label>Confirm Password</label>-->
                 <input type="password" name="confirmPassword" class="form-control" ng-model="vm.user.confirmPassword" match="vm.user.password" ng-minlength="3" placeholder={{'SIGNUP_PAGE.CONFIRMPASSWORD'|translate}} required/>
                 <p class="help-block" ng-show="form.confirmPassword.$error.match && vm.submitted">
                   Passwords must match.
                 </p>
+              </div>
+
+              <div class="form-group" ng-class="{ 'has-success': form.inviteCode.$valid && vm.submitted, 'has-error': form.inviteCode.$invalid && vm.submitted }" style="margin-bottom: 40px;">
+                <!--<label>Confirm Password</label>-->
+                <input type="text" name="inviteCode" class="form-control" ng-model="vm.user.inviteCode" ng-minlength="3" placeholder="推荐码：机构名[#用户名]" />
               </div>
 
               <div class="has-error">

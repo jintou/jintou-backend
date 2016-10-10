@@ -2,7 +2,7 @@
 
 var translationsZH = {
   BILLYNPLATFORM: '比邻平台',
-  JINTOUFINANCECLOUD: '金投金融云平台',
+  MYCUBECLOUD: '我立方云平台',
   BILLYNLANGUAGE: '中文',
   appEngine: '系统应用',
   space: "机构",
@@ -32,7 +32,7 @@ var translationsZH = {
 
 var translationsEN = {
   BILLYNPLATFORM: 'Billyn Platform',
-  JINTOUFINANCECLOUD: 'Jintou Finance Cloud',
+  MYCUBECLOUD: 'MyCube Cloud',
   BILLYNLANGUAGE: 'English',
   appEngine: 'App Engine',
   LOGIN_PAGE: {

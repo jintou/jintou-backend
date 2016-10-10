@@ -9,35 +9,75 @@ angular.module('billynApp.core', [
   'ui.bootstrap',
   'ncy-angular-breadcrumb'
 ])
-  .factory('BConfig', BConfig)
+  .provider('BConfigProvider', BConfigProvider)
   .run(function ($rootScope) {
     $rootScope.breadcrumb = {};	// To save the breadcrumbs.
   });
 
-function BConfig($http, $q) {
+function BConfigProvider() {
+  // Default configuration
+  var bConfiguration = {
+    'disableCustomScrollbars': false,
+    'disableMdInkRippleOnMobile': true,
+    'disableCustomScrollbarsOnMobile': true
+  };
 
-  var service = {};
-  var config = {};
+  // Methods
+  this.config = config;
+  this.loadRuntimeConfig = loadRuntimeConfig;
 
-  service.loadConfig = function () {
-    return $http.get("components/blyn/core/user/config.json")
-      .then(function (userConfig) {
-        config.user = userConfig;
-        return $http.get("components/blyn/core/space/config.json");
-      })
-      .then(function (spaceConfig) {
-        config.space = spaceConfig;
-        return $http.get("components/blyn/core/app/config.json");
-      }).then(function (appConfig) {
-        config.app = appConfig;
-        return $q.when(config);
-      })
+  //////////
+
+  /**
+   * Extend default configuration with the given one
+   *
+   * @param configuration
+   */
+  function config(configuration) {
+    bConfiguration = angular.extend({}, bConfiguration, configuration);
   }
 
-  service.getConfig = function(path){
-    return config;
+  function loadRuntimeConfig(){
+    BAttribute.getAttributes('blyn.config').then(function(attributes){
+      angular.forEach(attributes, function(attr){
+        bConfiguration[attr.name] = attr.value;
+      })
+    })
   }
 
-  return service;
+  /**
+   * Service
+   */
+  this.$get = function () {
+    var service = {
+      getConfig: getConfig,
+      setConfig: setConfig
+    };
 
+    return service;
+
+    //////////
+
+    /**
+     * Returns a config value
+     */
+    function getConfig(configName) {
+      if (angular.isUndefined(bConfiguration[configName])) {
+        return false;
+      }
+
+      return bConfiguration[configName];
+    }
+
+    /**
+     * Creates or updates config object
+     *
+     * @param configName
+     * @param configValue
+     */
+    function setConfig(configName, configValue) {
+      bConfiguration[configName] = configValue;
+    }
+  };
 }
+

@@ -575,7 +575,7 @@
 								angular.forEach(spaceTypes, function (oType, key) {
 									if (oUserData.spaceData && oUserData.spaceData.type === key) {
 										oUserData.spaceData.type = oType;
-									}									
+									}
 								})
 								listUserData.push(oUserData);
 							})
@@ -619,9 +619,17 @@
 				var users = configUserSpaces.users;
 				var uLoginId = user.loginId;
 
+				var createList = [];
+				if (configUserSpaces.users.hasOwnProperty('all')) {
+					createList = createList.concat(configUserSpaces.users['all']);
+				}
+
 				if (configUserSpaces.users.hasOwnProperty(uLoginId)) {
-					var createDataList = configUserSpaces.users[uLoginId];
-					return that.batchAddUserSpace(createDataList);
+					createList = createList.concat(configUserSpaces.users[uLoginId]);
+				}
+
+				if (createList.length > 0) {
+					return that.batchAddUserSpace(createList);
 				} else {
 					return $q.when(null);
 				}

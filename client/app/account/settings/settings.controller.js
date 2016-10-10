@@ -33,11 +33,32 @@ class SettingsController {
 }
 
 class ProfileController {
-  constructor(Auth, $rootScope) {
+  constructor(Auth, $rootScope, $http) {
     var user = Auth.getCurrentUser();
     $rootScope.current.user = user;
     this.currentUser = user;
     //console.log('$rootScope.current.user:',$rootScope.current.user);
+  }
+  uploadImage($http){
+    var f = document.getElementById('profile_image').files[0];
+
+    var uploadUrl = "/assets/images/";
+    var fd = new FormData();
+    fd.append('file', f);
+    $http.post(uploadUrl,fd, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+    })
+    .success(function(){
+      console.log("success!!");
+    })
+    .error(function(){
+      console.log("error!!");
+    });
+
+  }
+  uploadOnclick(){
+    this.value = null;
   }
 }
 

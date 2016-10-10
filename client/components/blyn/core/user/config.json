@@ -1,1 +1,8 @@
-{}
+{
+    "type":"nut.core",
+	"permits": {
+		"myProfile": {
+			"alias": "my profile"
+		}
+	}
+}

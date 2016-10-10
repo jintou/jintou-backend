@@ -13,7 +13,9 @@ router.patch('/:id', controller.update);
 router.delete('/:id', controller.destroy);
 
 router.post('/addAttribute/', controller.addAttribute);
+router.post('/add', controller.addAttribute);
 router.post('/addAttributes/', controller.addAttributes);
+router.post('/batchAdd', controller.addAttributes);
 
 router.post('/getAttribute/', controller.getAttribute);
 //router.post('/getAttributes/', controller.getAttributes);

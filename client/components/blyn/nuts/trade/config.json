@@ -1,14 +1,14 @@
 {
-	"type":"nut.normal",
+    "type":"nut.core",
 	"permits": {
-		"nut.admin": {
-			"alias": "admin"
+		"admin": {
+			"alias": "admin money stuff"
 		},
-		"nut.member": {
-			"alias": "member"
+		"manage": {
+			"alias": "manage money stuff"
 		},
-		"nut.customer": {
-			"alias": "customer"
+		"client": {
+			"alias": "money stuff for client"
 		}
 	}
 }

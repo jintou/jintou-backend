@@ -29,23 +29,39 @@ angular.module('billynApp')
         controller: 'SignupController',
         controllerAs: 'vm'
       })
-      .state('pc.settings', {
-        url: '/settings',
-        templateUrl: 'app/account/settings/settings.html',
-        controller: 'SettingsController',
-        controllerAs: 'vm',
-        ncyBreadcrumb: {label:'设置'},
+      .state('pc.account', {
+        url: '/account',
+        template: '<div ui-view=""></div>',
+        //controller: 'AccountController',
+        //controllerAs: 'vm',
+        ncyBreadcrumb: {skip:true},
         authenticate: true
       })
-      .state('pc.settings.profile', {
+      .state('pc.account.profile', {
         url: '/profile',
         templateUrl: 'app/account/settings/profile.html',
         controller: 'ProfileController',
         controllerAs: 'vm',
-        ncyBreadcrumb: {skip:true},
+        ncyBreadcrumb: {label:'设置账号'},
         authenticate: true
       })
-      .state('pc.settings.changePassword', {
+      .state('pc.account.finance', {
+        url: '/finance',
+        templateUrl: 'app/account/finance/views/home.html',
+        controller: 'MyFinanceController',
+        controllerAs: 'vm',
+        ncyBreadcrumb: {label:'金融账户'},
+        authenticate: true
+      })
+      .state('pc.account.trade', {
+        url: '/trade',
+        templateUrl: 'app/account/trade/views/home.html',
+        controller: 'MyTradeController',
+        controllerAs: 'vm',
+        ncyBreadcrumb: {label:'我的交易'},
+        authenticate: true
+      })
+      .state('pc.account.changePassword', {
         url: '/changepassword',
         templateUrl: 'app/account/settings/changePassword.html',
         ncyBreadcrumb: {label:'修改密码'},

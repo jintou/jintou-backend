@@ -23,6 +23,7 @@ export default function(app) {
   app.use('/api/circles', require('./api/circle'));
   app.use('/api/collabs', require('./api/collab'));
   app.use('/api/vouchers', require('./api/voucher'));
+  app.use('/api/moneys', require('./api/money'));
   
   app.use('/auth', require('./auth'));
   

@@ -1,11 +1,14 @@
 {
-	"type": "nut.normal",
+    "type":"nut.core",
 	"permits": {
-		"managePropertyProduct": {
-			"alias": "管理置业产品"
+		"admin": {
+			"alias": "admin stuff"
 		},
-		"searchProduct": {
-			"alias": "查找置业"
+		"manage": {
+			"alias": "manage stuff"
+		},
+		"client": {
+			"alias": "client stuff"
 		}
 	}
 }

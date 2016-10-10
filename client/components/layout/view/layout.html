@@ -7,7 +7,7 @@
         <li>
           <a ui-sref="pc.dashboard" class="active ajax-link">
             <i class="fa fa-dashboard"></i>
-            <span class="hidden-xs">机构书签</span>
+            <span class="hidden-xs">个人空间</span>
           </a>
         </li>
         <li class="dropdown" ng-repeat="space in layout.spaces">
@@ -16,8 +16,8 @@
             <span class="hidden-xs">{{space.alias}}</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="ajax-link" ui-sref="pc.space.home({spaceId: space._id})">机构服务</a></li>
-            <li><a class="ajax-link" ui-sref="pc.space.app.circle({spaceId: space._id, appId: space.appEngine._id, nutId: space.appEngine.circle._id})">机构合作</a></li>
+            <li><a class="ajax-link" ui-sref="pc.space.home({spaceId: space._id})">所有服务</a></li>
+            <li ng-repeat="app in space.apps"><a class="ajax-link" ui-sref="pc.space.app.home({spaceId: space._id, appId: app._id})">{{app.alias}}</a></li>
           </ul>
         </li>
       </ul>

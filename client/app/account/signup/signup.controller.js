@@ -6,7 +6,6 @@ class SignupController {
   error = {};
   submitted = false;
   //end-non-standard
-
   constructor(Auth, $state) {
     this.Auth = Auth;
     this.$state = $state;
@@ -15,13 +14,14 @@ class SignupController {
 
   register(form) {
     this.submitted = true;
-    
+
     if (form.$valid) {
       this.registering = true;
       this.Auth.createUser({
         loginId: this.user.loginId,
         // email: this.user.email,
-        password: this.user.password
+        password: this.user.password,
+        inviteCode: this.user.inviteCode
       })
       .then(() => {
         // Account created, redirect to home

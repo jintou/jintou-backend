@@ -1,32 +1,5 @@
-<div class="row" ng-hide="listMessage.spaces.length">
-  <div class="firstWelcome">
-    <p class="firstWelcome-title">您还没有加入任何机构，您可以：</p>
-    <div class="row">
-      <div class="col-xs-4">
-        <img src="components/blyn/core/dash/view/img/empty_inbox_dark.png" width="150"/>
-      </div>
-      <div class="col-xs-8">
-        <div class="firstWelcome-operation row">
-          <div class="col-xs-4 col-xs-offset-1">
-            <a class="btn btn-info" ui-sref="pc.createSpace">
-              <i class="fa fa-plus"></i> 创建机构</a>
-          </div>
-          <div class="col-xs-4">
-            <a class="btn btn-info" ui-sref="pc.joinSpace">
-              <i class="fa fa-group"></i> 加入机构</a>
-          </div>
-        </div>
-        <div class="firstWelcome-description">
-          <p class="text-muted">如果您创建了一个机构，您将是该机构的管理员。</p>
-          <p class="text-muted">如果您加入了别人创建的机构，在该机构中您将是普通用户。</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div ng-show="listMessage.spaces.length">
- <!--  <div class="row well well-sm" style="position: absolute; top: 40px; left: 0; right: 0; height: 40px; z-index: 100; padding-bottom: 7px;padding-top: 7px">
+<div>
+  <!--  <div class="row well well-sm" style="position: absolute; top: 40px; left: 0; right: 0; height: 40px; z-index: 100; padding-bottom: 7px;padding-top: 7px">
     <div class="col-xs-9">
     </div>
     <div class="col-xs-3">
@@ -40,37 +13,37 @@
       <div class="dashboard-header row">
         <div class="col-sm-4">
           <div class="dashboard-user">
-            <div class="dashboard-user-avatar">
-                <img src="assets/images/a{{listMessage.currentUser._id}}.jpg" alt="avatar">
-            </div>  
+            <div class="dashboard-user-avatar" ng-click="listMessage.goto('pc.account.profile')">
+              <img src="assets/profileImages/{{listMessage.currentUser.loginId}}_icon.png" alt="avatar">
+            </div>
             <div class="dashboard-user-desc">
               <span class="dashboard-user-hello">嗨，</span>
-              <a class="dashboard-user-name" href="#">{{listMessage.currentUser.loginId}}</a>
+              <a class="dashboard-user-name" ui-sref="pc.account.profile">{{listMessage.currentUser.loginId}}</a>
             </div>
           </div>
         </div>
         <div class="col-sm-4">
           <div class="dashboard-infoboard">
-            <h5>我还需要完成的任务：</h5>
-            <div><b class="dashboard-infoboard-num">26</b> <b class="dashboard-infoboard-unit"></b></div>
+            <h5>我的金融：</h5>
+            <div>加油赚余额：<b class="dashboard-infoboard-num">26</b> <b class="dashboard-infoboard-unit"></b></div>
             <div class="dashboard-infoboard-operation">
-              <button type="button" class="btn btn-default">查看我的任务</button>
+              <button type="button" class="btn btn-default" ng-click="listMessage.goto('pc.account.finance')">查看我的金融</button>
             </div>
           </div>
         </div>
         <div class="col-sm-4">
           <div class="dashboard-infoboard">
-            <h5>已完成的工作：</h5>
-            <div><b class="dashboard-infoboard-num">33</b> <b class="dashboard-infoboard-unit"></b></div>
+            <h5>我的交易：</h5>
+            <div>未完成交易：<b class="dashboard-infoboard-num">33</b> <b class="dashboard-infoboard-unit"></b></div>
             <div class="dashboard-infoboard-operation">
-              <button type="button" class="btn btn-default">查看所有工作</button>
+              <button type="button" class="btn btn-default" ng-click="listMessage.goto('pc.account.trade')">查看所有交易</button>
             </div>
           </div>
         </div>
       </div>
       <!-- /dashboard-header -->
       <!-- dashboard-body -->
-      <div class="dashboard-body">
+      <div class="dashboard-body" ng-show="listMessage.spaces.length">
         <div class="dashboard-title">
           <b>机构列表</b>
           <span class="pull-right">
@@ -84,10 +57,10 @@
                 <a style="cursor: pointer" ui-sref="pc.space.home({spaceId: space._id})">
                   <i class="fa fa-windows"></i> {{space.alias}}
                 </a>
-                <span style="float: right"><i class="fa fa-power-off"></i> 
+                <span style="float: right"><i class="fa fa-power-off"></i>
                     <a href="#" data-toggle='modal' data-target='#exitSapceModal' ng-click="listMessage.currentSpace=space">退出角色</a>
                 </span>
-                    
+
               </div>
               <!-- <div style="min-height: 258px"> -->
               <div class="appBookmark" ng-repeat="(index, app) in space.apps">
@@ -104,6 +77,32 @@
                 <div class="appBookmark-link">
                   <a ng-repeat="(index, permitNut) in app.permitNuts" ui-sref="pc.space.app.{{permitNut.nut.name}}({spaceId:space._id,appId:app._id,nutId:permitNut.nut._id})">{{permitNut.nut.alias|translate}}</a>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-body" ng-hide="listMessage.spaces.length">
+        <div class="firstWelcome">
+          <p class="firstWelcome-title">您还没有加入任何机构，您可以：</p>
+          <div class="row">
+            <div class="col-xs-4">
+              <img src="components/blyn/core/dash/view/img/empty_inbox_dark.png" width="150" />
+            </div>
+            <div class="col-xs-8">
+              <div class="firstWelcome-operation row">
+                <div class="col-xs-4 col-xs-offset-1">
+                  <a class="btn btn-info" ui-sref="pc.createSpace">
+                    <i class="fa fa-plus"></i> 创建机构</a>
+                </div>
+                <div class="col-xs-4">
+                  <a class="btn btn-info" ui-sref="pc.joinSpace">
+                    <i class="fa fa-group"></i> 加入机构</a>
+                </div>
+              </div>
+              <div class="firstWelcome-description">
+                <p class="text-muted">如果您创建了一个机构，您将是该机构的管理员。</p>
+                <p class="text-muted">如果您加入了别人创建的机构，在该机构中您将是普通用户。</p>
               </div>
             </div>
           </div>

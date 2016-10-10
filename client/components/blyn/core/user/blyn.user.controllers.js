@@ -184,6 +184,7 @@
     }
   }
 
+
   angular.module('billynApp.core')
     .controller('UserController', UserController)
     .controller('UserHomeController', UserHomeController)

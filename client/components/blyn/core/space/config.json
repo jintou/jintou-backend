@@ -45,7 +45,7 @@
 				}
 			],
 			"apps": [
-				"weMember"
+				"appEngine","weMember"
 			]
 		},
 		"com.myCube": {
@@ -70,38 +70,21 @@
 				}
 			],
 			"apps": [
-				"weProduct","weFinance","weTrade"
+				"appEngine","weProduct","weFinance","weTrade"
 			]
 		},
 		"person.myCube": {
 			"name": "person.myCube",
-			"alias": "我立方个人空间",
-			"description": "我立方个人空间",
-			"roles": [
-				{
-					"name": "admin",
-					"alias": "系统管理员"
-				}
-			],
+			"alias": "个人空间",
+			"description": "个人空间",
 			"apps": [
-				"userApp"
+				"appEngine","userApp"
 			]
 		}
 	},
 	"userSpaces": {
 		"users": {
 			"admin@myCube.com": [
-				{
-					"spaceData": {
-						"name": "myCube.com",
-						"alias": "我立方机构",
-						"type": "com.myCube"
-					},
-					"joinRole": "admin",
-					"joinStatus": "created"
-				}
-			],
-			"u8": [
 				{
 					"spaceData": {
 						"name": "myCube.com",

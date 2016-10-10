@@ -44,6 +44,7 @@ export default function (sequelize, DataTypes) {
 						return this.findById(spaceData);
 					}
 					var findData = {};
+					var whereData = {};
 					if (typeof spaceData === 'string') {
 						spaceData = {
 							name: spaceData
@@ -53,17 +54,23 @@ export default function (sequelize, DataTypes) {
 					if (typeof spaceData === 'object') {
 						if (spaceData.name) {
 							findData.name = spaceData.name;
+							whereData=  {
+								where: {
+									name: spaceData.name
+								}
+							}
 						}
 					}
-
+					//console.log('getSpace-before find--findData:',JSON.stringify(findData));
 					if (Object.keys(findData).length > 0) {
 						isReturned = true;
-						return this.find({
-							where: findData
-						})
+						//console.log('2 getSpace-before find--findData:',JSON.stringify(findData));
+						//console.log('getSpace-before find--whereData:',JSON.stringify(whereData));
+						return this.find(whereData)
 					}
 
 					if (!isReturned) {
+						//console.log('11');
 						return Promise.resolve(null);
 					}
 				},
@@ -345,11 +352,14 @@ export default function (sequelize, DataTypes) {
 
 				},
 
-				addUserSpace: function (user, spaceData, roleData, joinStatus) {
+				addUserSpace: function (user, spaceData, roleData, joinStatus, invitor) {
 					var userId;
 					var that = this;
 					var UserRole = sqldb.UserRole;
 					var isCreated = false;
+					var oSpace, oUser;
+
+					//console.log('joinStatus:',joinStatus);
 
 					if (!isNaN(user) && user > 0) {
 						userId = user;
@@ -357,7 +367,7 @@ export default function (sequelize, DataTypes) {
 					if (typeof user === 'object') {
 						userId = user._id || user.id || null;
 					}
-					if (joinStatus === 'created' || 'create') {
+					if (joinStatus === 'created' || joinStatus ==='create') {
 						isCreated = true;
 						joinStatus = 'joined';
 					}
@@ -366,39 +376,74 @@ export default function (sequelize, DataTypes) {
 					}
 					//console.log('joinStatus:',joinStatus);
 					//console.log('isCreated:',isCreated);
+					//console.log('1 userId:', userId);
 					if (userId && userId > 0) {
+						//console.log('2 userId:', userId)
 						return new Promise(function (resolve, reject) {
-							//console.log('spaceData:',spaceData);
+							//console.log('before create--spaceData:',spaceData);
 							if (isCreated) {
+								//console.log('isCreated');
 								joinStatus = "joined";
-								return that.add(spaceData).then(function(space){
-									//console.log('addUserSpace space:',JSON.stringify(space));
+								//console.log('before addSpace space:',JSON.stringify(space));
+								return that.add(spaceData).then(function (space) {
+									//console.log('after addSpace space:',JSON.stringify(space));
 									return resolve(space);
 								});
 							} else {
-								return that.getSpace(spaceData).then(function(space){
+								//console.log('else before getSpace--spaceData:',JSON.stringify(spaceData));
+								return that.getSpace(spaceData).then(function (space) {
+									//console.log('after getspace--space:', JSON.stringify(space));
 									return resolve(space);
 								});
 							}
 						})
 							.then(function (space) {
+								//console.log('addUserSpace 1');
+								//console.log('after getspace:',JSON.stringify(space));
+								oSpace = space;
+								if (invitor) {
+									//console.log('before getUser--invitor:', invitor);
+									User = sqldb.User;
+									return User.getUser(invitor).then(function (user) {
+										if (user) {
+											oUser = user;
+										}
+										return Promise.resolve(user);
+									})
+								} else {
+									return Promise.resolve(null);
+								}
+							})
+							.then(function () {
+								//console.log('before addRole--oSpace:',JSON.stringify(oSpace));
+								var space = oSpace;
 								//console.log('before space model add userSpace:', JSON.stringify(roleData));
 								if (space) {
+									//console.log('addUserSpace 3',JSON.stringify(space));
 									return that.addRole(roleData, space._id).then(function (role) {
 										//console.log('after space model addRole:', JSON.stringify(role));
+										//console.log('addUserSpace 2');
 										if (typeof role === 'object') {
+											var defaultData = {
+												joinStatus: joinStatus,
+												spaceId: role.spaceId
+											};
+											if (oUser) {
+												defaultData.invitorId = oUser._id;
+											}
+											//console.log('addUserSpace 3');
 											return UserRole.findOrCreate({
 												where: {
 													userId: userId,
 													roleId: role._id
 												},
-												defaults: {
-													joinStatus: joinStatus,
-													spaceId: role.spaceId
-												}
+												defaults: defaultData
 											}).spread(function (entity, created) {
+												//console.log('addUserSpace 4');
 												//console.log('addUserSpace created:',created);
 												return Promise.resolve(entity);
+											}).catch(function (err) {
+												console.log('err:', err);
 											})
 										} else {
 											return Promise.reject('role is invalid');
@@ -411,93 +456,6 @@ export default function (sequelize, DataTypes) {
 					} else {
 						return Promise.reject('no userId');
 					}
-
-					/*
-						var spaceData = {};
-						var newSpace;
-						var UserRole = sqldb.UserRole;
-						var App = sqldb.App;
-						if (typeof user === 'object') {
-							var alias = user.alias || user.name || user.loginId;
-							spaceData.name = 'mySpace_of_' + user.loginId;
-							spaceData.alias = 'mySpace(' + alias + ')';
-							spaceData.type = 'personal';
-							return this.add(spaceData).then(function (space) {
-								//add user into admin of space
-								newSpace = space;
-								return UserRole.add({
-									userId: user._id,
-									role: 'admin',
-									spaceId: space._id
-								});
-							})
-								.then(function () {
-									//add appEngine for user space
-									return App.add(
-										{
-											"name": "appEngine",
-											"alias": "appEngine",
-											"type": "app.core",
-											"cores": {
-												"role": {
-													"grants": {
-														"admin": "adminSpaceRole|管理机构角色,adminUserRole|管理用户角色",
-														"everyone": "myRole|我的角色"
-													}
-												},
-												"space": {
-													"grants": {
-														"admin": [
-															{
-																"name": "adminSpace",
-																"alias": "机构设置"
-															},
-															{
-																"name": "appStore",
-																"alias": "应用商店"
-															}
-														]
-													}
-												},
-												"collab": {
-													"grants": {
-														"admin": ["adminCollab|设置协作"],
-														"manager": ["manageCollab|管理协作"],
-														"everyone": "collabNuts|协作功能"
-													}
-												},
-												"circle": {
-													"grants": {
-														"admin": ["adminCircle|设置机构圈"],
-														"manager": ["manageCircle|管理机构圈"],
-														"everyone": ["circleMember|机构圈主页"]
-													}
-												}
-											}
-										}, newSpace._id
-									);
-								})
-								.then(function () {
-									//add personApp for user space
-									return App.add(
-										{
-											"name": "personApp",
-											"alias": "Person App",
-											"type": "app.core",
-											"cores": {
-												"user": {
-													"grants": {
-														"admin": "adminUser, myProfile"
-													}
-												}
-											}
-										}, newSpace._id
-									);
-								})
-								.then(function () {
-									return newSpace;
-								})
-						}*/
 				},
 			},
 			instanceMethods: {

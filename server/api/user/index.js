@@ -28,7 +28,7 @@ router.post('/', controller.create);
 router.get('/profiles', controller.queryAllProfile);
 router.post('/profiles', controller.bulkAddProfile);
 
-
+router.post('/profileImage',controller.profileImage);
 //router.post('/test', controller.test);
 
 export default router;

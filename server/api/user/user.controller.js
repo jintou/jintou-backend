@@ -11,6 +11,11 @@ import passport from 'passport';
 import config from '../../config/environment';
 import jwt from 'jsonwebtoken';
 var Promise = require('bluebird');
+var formidable = require('formidable');
+var path = require('path');
+var fs = require('fs');
+var Jimp = require('jimp');
+var profilePath = "/Users/hahi/Desktop/backend/jintou-backend/client/assets/profileImages";
 
 function respondWithResult(res, statusCode) {
 
@@ -102,8 +107,19 @@ export function index(req, res) {
  */
 export function create(req, res, next) {
   var newUser = User.build(req.body);
+  var invitor, inviteSpace;
   newUser.setDataValue('provider', 'local');
   newUser.setDataValue('role', 'user');
+  console.log('body:',JSON.stringify(req.body));
+  if (req.body.inviteCode) {
+    var inviteCode = req.body.inviteCode;
+    var sVars = inviteCode.split('#');
+    //console.log('sVars:',JSON.stringify(sVars));
+    inviteSpace = sVars[0];
+    if (sVars[1]) {
+      invitor = sVars[1];
+    }
+  }
   return newUser.save()
     .then(function (user) {
       newUser = user;
@@ -160,8 +176,36 @@ export function create(req, res, next) {
           }
         ]
       }
-      return Space.addUserSpace(user, mySpaceData, 'admin', 'joined');
-    }).then(function (data) {
+      //create default profile image
+
+      Jimp.read(profilePath+"/default.png", function (err, image) {
+          if (err) throw err;
+          image.quality(100)                 // set JPEG quality
+               .write(path.join(profilePath + "/"+ newUser.loginId + "_icon.png")); // save
+      });
+
+      //console.log('before addUserSpace:',JSON.stringify(mySpaceData));
+      //console.log('inviteSpace:',inviteSpace);
+      return Space.addUserSpace(user, mySpaceData, 'admin', 'created');
+    })
+    .then(function () { //join space by inviteCode
+      //console.log('after addUserSpace:');
+      //console.log('inviteSpace:',inviteSpace);
+      if (inviteSpace) {
+        return Space.getSpace(inviteSpace).then(function (space) {
+          //console.log('after getSpace--space:',JSON.stringify(space));
+          //console.log('after getSpace--user:',JSON.stringify(newUser));
+          if(space){
+            return Space.addUserSpace(newUser, space, 'member', 'joined', invitor);
+          } else {
+            return Promise.resolve(null);
+          }     
+        })
+      } else {
+        return Promise.resolve(null);
+      }
+    })
+    .then(function (data) {
       //console.log('in create user:',JSON.stringify(data));
       var token = jwt.sign({ _id: newUser._id }, config.secrets.session, {
         expiresIn: 60 * 60 * 5
@@ -443,4 +487,50 @@ export function findAllUserGroupRole(req, res) {
     .catch(handleError(res));
 }
 
+export function profileImage(req, res){
+  // create an incoming form object
+  var user = req.query.id;
+  var form = new formidable.IncomingForm();
 
+  // specify that we want to allow the user to upload multiple files in a single request
+  form.multiples = false;
+  //res.send(__dirname);
+  // store all uploads in the /uploads directory
+  form.uploadDir = profilePath;
+
+  // every time a file has been uploaded successfully,
+  // rename it to it's orignal name
+  form.on('file', function(field, file) {
+    //var name = file.name + ".jpg";
+    //res.send(name);
+    var type = file.type.split("/")[1];
+    // fs.rename(file.path, path.join(form.uploadDir, currentUser._id));
+    var id = req.query.id;
+    fs.rename(file.path, path.join(form.uploadDir,id + "." + type));
+    // res.end(id + "." + type);
+    // open a file called "lenna.png"
+    Jimp.read(path.join(form.uploadDir,id + "." + type), function (err, image) {
+        if (err) throw err;
+        image.quality(100)                 // set JPEG quality
+             .write(path.join(form.uploadDir + "/"+ id + "_icon.png")); // save
+    });
+
+  });
+
+  // log any errors that occur
+  form.on('error', function(err) {
+    console.log('An error has occured: \n' + err);
+  });
+
+  // once all the files have been uploaded, send a response to the client
+  form.on('end', function(err, fields, files) {
+    // res.writeHead(200, {'content-type': 'text/plain'});
+    // res.write('Received form:\n\n');
+    // res.write(files);
+    // res.send(files);
+   //res.end(req.query.id);
+  });
+
+  // parse the incoming request containing the form data
+  form.parse(req);
+}

@@ -250,7 +250,7 @@ export function findAllUserPermitNut(req, res) {
 
     var userRoleList = [];
 
-    UserRole.findAll({
+    return UserRole.findAll({
       where: whereData
     }).then(function (rows) {
 

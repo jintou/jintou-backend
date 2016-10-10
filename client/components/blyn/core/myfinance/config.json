@@ -1,0 +1,8 @@
+{
+    "type":"nut.core",
+	"permits": {
+		"moneyCard": {
+			"alias": "money card"
+		}
+	}
+}
